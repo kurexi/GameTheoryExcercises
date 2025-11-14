@@ -3,5 +3,5 @@ This library is for implementing the algoritms from Game Theory
 
 ## Run
 ```
-python3 -m example.strategic_form_game
+python3 -m example.strategic_form_game_example
 ```

@@ -1,5 +1,6 @@
 from lib.printable_strategic_form_game import TwoPlayerStrategicFormGame, PrintableTwoPlayerStrategicFormGame
 
+# Define the Game
 strategies = [
     ["A", "B", "C", "D" ,"E"],
     ["F", "G", "H", "I" ,"J"]
@@ -13,8 +14,17 @@ payoffs = [
     [(5,3),(5,1),(4,2),(8,3),(3,3)],
 ]
 
-sfg = TwoPlayerStrategicFormGame(strategies, payoffs)
-sfg.print()
+game = TwoPlayerStrategicFormGame(strategies, payoffs)
+game.print()
 
-dominant_game = sfg.eliminate_weakly_dominated_strategies(print_process=True)
+# Eliminate the dominated strategies
+
+dominant_game = game.eliminate_weakly_dominated_strategies(print_process=True)
 dominant_game.print()
+
+# Pure Nash Equilibria
+equilibria = dominant_game.pure_nash_equilibria()
+print(f"Pure Nash equilibria for subgame {equilibria}")
+
+equilibria = game.pure_nash_equilibria()
+print(f"Pure Nash equilibria for game {equilibria}")

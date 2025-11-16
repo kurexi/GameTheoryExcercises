@@ -18,7 +18,6 @@ game = TwoPlayerStrategicFormGame(strategies, payoffs)
 game.print()
 
 # Eliminate the dominated strategies
-
 dominant_game = game.eliminate_weakly_dominated_strategies(print_process=True)
 dominant_game.print()
 

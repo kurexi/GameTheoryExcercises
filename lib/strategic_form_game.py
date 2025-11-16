@@ -128,7 +128,7 @@ class TwoPlayerStrategicFormGame:
 
         return TwoPlayerStrategicFormGame(substrategies, subpayoff_matrix)
 
-    def _strategies_to_indexes(self, strategies:StrategyMatrix):
+    def _strategies_to_indexes(self, strategies:StrategyMatrix) -> list[list[int]]:
         strategy_indexs = [[],[]]
         for player_index in self.players:
             for player_strategy in strategies[player_index]:
@@ -195,3 +195,7 @@ class TwoPlayerStrategicFormGame:
                 response_indexes = [i]
 
         return [caller_strategies[response_index] for response_index in response_indexes]
+    
+    def get_output(self, first_player_strategy: str, second_player_strategy: str):
+        indexes = self._strategies_to_indexes([[first_player_strategy], [second_player_strategy]])
+        return self._payoffs[indexes[0][0]][indexes[1][0]]

@@ -8,4 +8,9 @@ python3 -m example.strategic_form_game_example
 
 ## Examples
 * [Strategic Form Game](example/strategic_form_game_example.py)
+    * Dominated strategy elimination 
+    * Equilibria
 * [Auction](example/auction_example.py)
+    * VickeryAuction
+        * Equilibria
+        * Envy-free outcomes

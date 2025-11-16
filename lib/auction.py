@@ -6,6 +6,15 @@ class VickeryAuction():
     Vickery Auction (known as second-price sealed-bid)
     """
     def __init__(self, theta_values: List[int], bids:List[int], tie_breacker: int):
+        """
+        Initialize Vickery Auction
+
+        :param theta_values: List of agent evaluations for the auctioned item
+        :param bids: List of available bids
+        :param tie_breacker: Index of the agent who wins in case of a tie
+        0 for first agent, 1 for second agent
+        """
+
         self.theta_values = theta_values
         self.bids = bids
         self.tie_breacker = tie_breacker
@@ -47,3 +56,19 @@ class VickeryAuction():
 
     def game(self):
         return self._strategic_form_game
+    
+    def print(self):
+        self.game().print()
+
+    def outcome(self, bids: List[int]):
+        bids_as_strategies = [str(bid) for bid in bids]
+        return self.game().get_output(bids_as_strategies[0], bids_as_strategies[1])
+    
+    def is_envy_free(self, bids: List[int]):
+        reverse_bids = list(bids)
+        reverse_bids.reverse()
+
+        outcome_before = self.outcome(bids)
+        outcome_after = self.outcome(reverse_bids)
+
+        return outcome_after[0] <= outcome_before[0] and outcome_after[1] <= outcome_before[1]

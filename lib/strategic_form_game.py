@@ -196,6 +196,64 @@ class TwoPlayerStrategicFormGame:
 
         return [caller_strategies[response_index] for response_index in response_indexes]
     
-    def get_output(self, first_player_strategy: str, second_player_strategy: str):
+    def get_output(self, first_player_strategy: str, second_player_strategy: str) -> Payoff:
         indexes = self._strategies_to_indexes([[first_player_strategy], [second_player_strategy]])
         return self._payoffs[indexes[0][0]][indexes[1][0]]
+    
+    def expected_utility(self, mixed_strategy: List[List[float]]):
+        """
+        Calculate expected utility for both players given their mixed strategies.
+        mixed_strategy: A list containing two lists, each representing the mixed strategy
+                        probabilities for player 1 and player 2 respectively.
+        Returns a list with expected utilities for player 1 and player 2.
+        """
+
+        result = [0.0, 0.0]
+        for first_player_strategy_index in range(len(self._strategies[self.first_player])):
+            for second_player_strategy_index in range(len(self._strategies[self.second_player])):
+                propability = (mixed_strategy[self.first_player][first_player_strategy_index] 
+                 * mixed_strategy[self.second_player][second_player_strategy_index])
+                payoff = self._payoffs[first_player_strategy_index][second_player_strategy_index]
+                result[0] += (propability * payoff[0])
+                result[1] += (propability * payoff[1])
+
+        return result
+    
+    def is_mixed_nash_equilibrium(self, mixed_strategy: List[List[float]]) -> bool:
+        """
+        Check mixed strategy is nash equilibrium with Indifference Principle.
+        mixed_strategy: A list containing two lists, each representing the mixed strategy
+                        probabilities for player 1 and player 2 respectively.
+        """
+
+        # Assume first player's strategy is fixed, check second player's indifference
+        for player_index in self.players:
+            if not self._is_mixed_nash_equilibrium_for_player(mixed_strategy, player_index):
+                return False
+        return True
+    
+    def _is_mixed_nash_equilibrium_for_player(self, mixed_strategy: List[List[float]], player_index: int) -> bool:
+        """
+        Check mixed strategy is nash equilibrium for given player with Indifference Principle.
+        mixed_strategy: A list containing two lists, each representing the mixed strategy
+                        probabilities for player 1 and player 2 respectively.
+        player_index: The index of the player to check (0 or 1).
+        """
+
+        opponent_index = self._get_opponent(player_index)
+
+        # Assume first player's strategy is fixed, check second player's indifference
+        expected_utilities_for_each_strategy = []
+        for player_strategy_index in range(len(self._strategies[player_index])):
+            expected_utility = 0.0
+            for opponent_strategy_index in range(len(self._strategies[opponent_index])):
+                propability = mixed_strategy[opponent_index][opponent_strategy_index]
+                payoff = self._get_payoff_value(player_index, player_strategy_index, opponent_strategy_index)
+                expected_utility += (propability * payoff)
+            expected_utilities_for_each_strategy.append(expected_utility)
+
+        for i in range(1, len(expected_utilities_for_each_strategy)):
+            if abs(expected_utilities_for_each_strategy[i] - expected_utilities_for_each_strategy[0]) > 1e-6:
+                return False
+            
+        return True

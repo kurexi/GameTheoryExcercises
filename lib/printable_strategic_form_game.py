@@ -1,9 +1,13 @@
-from typing import Callable, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 from .strategic_form_game import TwoPlayerStrategicFormGame
 
 StrategyMatrix = List[List[str]]
 Payoff = Tuple[float, float]
+
+STRATEGIES_ATTR = "_strategies"
+PAYOFFS_ATTR = "_payoffs"
+PRINTIBLE_ATTR = "printible"
 
 
 def _clone_strategy_matrix(
@@ -45,7 +49,7 @@ def _format_players_block(game: TwoPlayerStrategicFormGame) -> List[str]:
 
 
 def _format_payoff_block(game: TwoPlayerStrategicFormGame) -> List[str]:
-    if not getattr(game, "payoffs", None):
+    if not getattr(game, PAYOFFS_ATTR, None):
         return ["  Payoff matrix: <empty>"]
 
     player1_strats = _get_player_strategies(game, 0)
@@ -91,7 +95,7 @@ def _build_payoff_table(
 
 
 def _format_payoff_entry(game: TwoPlayerStrategicFormGame, row_index: int, column_index: int) -> str:
-    payoffs = getattr(game, "payoffs", []) or []
+    payoffs = getattr(game, PAYOFFS_ATTR, []) or []
     if row_index >= len(payoffs):
         return "—"
     row = payoffs[row_index]
@@ -104,7 +108,7 @@ def _format_payoff_entry(game: TwoPlayerStrategicFormGame, row_index: int, colum
 
 
 def _get_player_strategies(game: TwoPlayerStrategicFormGame, player_index: int) -> List[str]:
-    strategies = getattr(game, "strategies", []) or []
+    strategies = getattr(game, STRATEGIES_ATTR, []) or []
     if player_index >= len(strategies):
         return []
     player_strategies = strategies[player_index]
@@ -126,8 +130,9 @@ class PrintableTwoPlayerStrategicFormGame(TwoPlayerStrategicFormGame):
         """Create a printable version from an existing game instance."""
         if isinstance(game, cls):
             return game
-        strategies = _clone_strategy_matrix(getattr(game, "strategies", None))
-        payoffs = _clone_payoff_matrix(getattr(game, "payoffs", None))
+        strategies = _clone_strategy_matrix(getattr(game, STRATEGIES_ATTR, None))
+        payoffs = _clone_payoff_matrix(getattr(game, PAYOFFS_ATTR, None))
+
         return cls(strategies=strategies, payoffs=payoffs)
 
     def __repr__(self) -> str:
@@ -144,7 +149,7 @@ def _printible_property(game: TwoPlayerStrategicFormGame) -> str:
     return _format_game(game)
 
 
-def _set_printible_attribute(cls: type, attribute_name: str = "printible") -> None:
+def _set_printible_attribute(cls: type, attribute_name: str = PRINTIBLE_ATTR) -> None:
     if not hasattr(cls, attribute_name):
         setattr(cls, attribute_name, property(_printible_property))
 

@@ -48,38 +48,51 @@ class TwoPlayerStrategicFormGame:
             self._payoffs = payoffs
 
     def get_weakly_dominant_strategies(self) -> List[tuple]:
-        player1 = self._get_weakly_dominant_strategies_for_player(0)
-        player2 = self._get_weakly_dominant_strategies_for_player(1)
+        player1 = self._get_weakly_dominant_strategies_for_player(self.first_player)
+        player2 = self._get_weakly_dominant_strategies_for_player(self.second_player)
 
         return player1 + player2
     
-    def eliminate_weakly_dominated_strategies(self, print_process=False):
-        weakly_dominant_strategies = self.get_weakly_dominant_strategies()
-        if len(weakly_dominant_strategies) > 0:
-            
-            target_remove = weakly_dominant_strategies[0][1]
+    def get_strictly_dominant_strategies(self) -> List[tuple]:
+        player1 = self._get_strictly_dominant_strategies_for_player(self.first_player)
+        player2 = self._get_strictly_dominant_strategies_for_player(self.second_player)
+
+        return player1 + player2
     
-            result_strategies = [[],[]]
-            for s1 in self._strategies[self.first_player]:
-                if s1 != target_remove:
-                    result_strategies[self.first_player].append(s1)
+    def eliminate_dominated_strategies(self, strictly_only=False, print_process=False):
+        dominant_strategies = []
+        if strictly_only:
+            dominant_strategies = self.get_strictly_dominant_strategies()
+        else:
+            dominant_strategies = self.get_weakly_dominant_strategies()
 
-            for s2 in self._strategies[self.second_player]:
-                if s2 != target_remove:
-                    result_strategies[self.second_player].append(s2)
-
-            sgame = self.subgame(result_strategies)
+        if len(dominant_strategies) > 0:
+            
+            target_remove = dominant_strategies[0][1]
+            sgame = self._remove_strategy(target_remove)
+            
             if print_process:
                 print("-----------------")
-                print(f"Removing {target_remove} due to {weakly_dominant_strategies[0]}")
+                print(f"Removing {target_remove} due to {dominant_strategies[0]}")
                 sgame.print()
-            return sgame.eliminate_weakly_dominated_strategies(print_process)
+            return sgame.eliminate_dominated_strategies(strictly_only, print_process)
 
         return self
+    
+    def _remove_strategy(self, strategy) -> 'TwoPlayerStrategicFormGame':
+        result_strategies = [[],[]]
+        for s1 in self._strategies[self.first_player]:
+            if s1 != strategy:
+                result_strategies[self.first_player].append(s1)
 
+        for s2 in self._strategies[self.second_player]:
+            if s2 != strategy:
+                result_strategies[self.second_player].append(s2)
+
+        return self.subgame(result_strategies)
 
     def _get_weakly_dominant_strategies_for_player(self, player_index) -> List[tuple]:
-        result = [];
+        result = []
         for i in range(len(self._strategies[player_index])):
             for j in range(len(self._strategies[player_index])):
                 if i == j:
@@ -109,6 +122,19 @@ class TwoPlayerStrategicFormGame:
 
                 result.append((self._strategies[player_index][i], self._strategies[player_index][j]))
         return result
+    
+    def _get_strictly_dominant_strategies_for_player(self, player_index) -> List[tuple]:
+        dominant_pairs = []
+        weakly_dominants = self._get_weakly_dominant_strategies_for_player(player_index)
+        for pair in weakly_dominants:
+            is_strictly_dominant = True
+            for o in range(len(self._strategies[self._get_opponent(player_index)])):
+                if self._get_payoff_value(player_index, self._strategy_to_index(pair[0]), o) <= self._get_payoff_value(player_index, self._strategy_to_index(pair[1]), o):
+                    is_strictly_dominant = False
+                    break
+            if is_strictly_dominant:
+                dominant_pairs.append(pair)
+        return dominant_pairs
     
     def _get_payoff(self, caller_index, caller_strategy_index, opponent_strategy_index) -> Payoff:
         if (caller_index == self.first_player):

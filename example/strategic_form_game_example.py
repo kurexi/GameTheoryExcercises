@@ -18,7 +18,7 @@ game = TwoPlayerStrategicFormGame(strategies, payoffs)
 game.print()
 
 # Eliminate the dominated strategies
-dominant_game = game.eliminate_weakly_dominated_strategies(print_process=True)
+dominant_game = game.eliminate_dominated_strategies(strictly_only=False, print_process=True)
 dominant_game.print()
 
 # Pure Nash Equilibria
@@ -76,3 +76,24 @@ print(game3.get_weakly_dominant_strategies())
 # Pure Nash Equilibria
 equilibria = game3.pure_nash_equilibria()
 print(f"Pure Nash equilibria for game3 {equilibria}")
+
+
+# Game 4
+strategies = [
+    ["A", "B", "C", "D", "E", "F"],
+    ["G", "H", "I", "J", "K"]
+]
+
+payoffs = [
+    [(7,7),(1,6),(3,8),(3,10),(5,3)],
+    [(11,7),(6,7),(1,9),(3,10),(7,9)],
+    [(1,4),(1,4),(1,5),(6,3),(4,2)],
+    [(11,1),(5,2),(8,3),(5,4),(8,2)],
+    [(7,10),(6,6),(7,11),(3,10),(5,9)],
+    [(10,6),(2,6),(7,7),(4,8),(6,7)],
+]
+
+game4 = TwoPlayerStrategicFormGame(strategies, payoffs)
+game4.print()
+subgame = game4.eliminate_dominated_strategies(strictly_only=True, print_process=True)
+subgame.print()

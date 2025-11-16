@@ -72,3 +72,39 @@ class VickeryAuction():
         outcome_after = self.outcome(reverse_bids)
 
         return outcome_after[0] <= outcome_before[0] and outcome_after[1] <= outcome_before[1]
+    
+def first_price_sealed_bid_auction_expected_utilities(evaluation: int, bids: List[int], probabilities: List[float]) -> dict[int, float]:
+    """
+    Calculate the expected value of a first-price sealed-bid auction given an agent's evaluation and the probabilities of winning with different bids.
+    :param evaluation: The agent's evaluation of the auctioned item.
+    :param probabilities: A list of probabilities corresponding to different bid levels.
+    :return: The expected value of the auction for the agent.
+    """
+
+    expected_utilities = {}
+    for i in range(len(bids)):
+        bid, probability = bids[i], probabilities[i]
+        expected_utilities[bid] = (evaluation - bid) * probability
+    return expected_utilities
+
+def vickery_auction_expected_utilities(evaluation: int, bids: List[int], probabilities: List[float]) -> dict[int, float]:
+    """
+    Calculate the expected value of a second-price sealed-bid auction given an agent's evaluation and the probabilities of winning with different bids.
+    :param evaluation: The agent's evaluation of the auctioned item.
+    :param probabilities: A list of probabilities corresponding to different bid levels.
+    :return: The expected value of the auction for the agent.
+    """
+    expected_utilities = {}
+    for i in range(len(bids)):
+        bid, probability = bids[i], probabilities[i]
+        getting = evaluation * probability
+        paying = 0.0
+
+        for j in range(i):
+            pay_bid, pay_probability, next_pay_bid_probability = bids[j], probabilities[j], probabilities[j+1]
+            diff_probability = next_pay_bid_probability - pay_probability
+            paying += pay_bid * diff_probability
+
+        expected_utilities[bid] = getting - paying
+       
+    return expected_utilities

@@ -14,3 +14,6 @@ python3 -m example.strategic_form_game_example
     * VickeryAuction
         * Equilibria
         * Envy-free outcomes
+        * Expected Utility
+    * First-price sealed-bid
+        * Expected Utility

@@ -18,3 +18,6 @@ python3 -m example.strategic_form_game_example
         * Expected Utility
     * First-price sealed-bid
         * Expected Utility
+* [Cooperative Game](example/cooperative_game_example.py)
+    * Shapley Value
+    * Banzhaf Index
